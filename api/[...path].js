@@ -5,24 +5,15 @@ const FRONTEND =
   "https://clothingshop.surge.sh";
 
 export default async function handler(req, res) {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    FRONTEND
-  );
-
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", FRONTEND);
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
-
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type, X-Cart-Token"
-  );
-
-  res.setHeader(
-    "Access-Control-Max-Age",
-    "86400"
   );
 
   if (req.method === "OPTIONS") {
@@ -40,7 +31,9 @@ export default async function handler(req, res) {
       if (key === "path") continue;
 
       if (Array.isArray(value)) {
-        value.forEach(v => params.append(key, String(v)));
+        for (const v of value) {
+          params.append(key, String(v));
+        }
       } else if (value !== undefined) {
         params.append(key, String(value));
       }
@@ -48,11 +41,11 @@ export default async function handler(req, res) {
 
     const target =
       `${BACKEND}/${path}` +
-      (params.toString()
-        ? `?${params.toString()}`
-        : "");
+      (params.toString() ? `?${params.toString()}` : "");
 
-    const headers = {};
+    const headers = {
+      Accept: "application/json"
+    };
 
     if (req.headers["x-cart-token"]) {
       headers["X-Cart-Token"] =
@@ -82,9 +75,18 @@ export default async function handler(req, res) {
       }
     }
 
+    console.log("Proxy target:", target);
+
     const response = await fetch(target, options);
 
     const body = await response.text();
+
+    console.log(
+      "Backend status:",
+      response.status
+    );
+
+    res.status(response.status);
 
     const contentType =
       response.headers.get("content-type");
@@ -96,12 +98,10 @@ export default async function handler(req, res) {
       );
     }
 
-    return res
-      .status(response.status)
-      .send(body);
+    return res.send(body);
 
   } catch (error) {
-    console.error(error);
+    console.error("PROXY ERROR:", error);
 
     return res.status(502).json({
       success: false,
@@ -109,4 +109,4 @@ export default async function handler(req, res) {
       message: error.message
     });
   }
-        }
+}
