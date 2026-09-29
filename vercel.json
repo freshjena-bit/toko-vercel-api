@@ -5,5 +5,24 @@
       "source": "/api/:path*",
       "destination": "https://clothingshop.ct.ws/wp-json/toko/v1/:path*"
     }
+  ],
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://clothingshop.surge.sh"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, X-Cart-Token"
+        }
+      ]
+    }
   ]
 }
