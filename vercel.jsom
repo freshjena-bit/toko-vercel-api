@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://clothingshop.ct.ws/wp-json/toko/v1/:path*"
+    }
+  ]
+}
